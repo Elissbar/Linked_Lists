@@ -38,7 +38,7 @@ class DBLLinkedList:
         self.tail.next_node = self.head
         self.head.prev_node = self.tail
 
-    def insert(self, element, index): # Метод не доделан, не используется self.tail
+    def insert(self, element, index):
         node = self.head
         if index == 0:
             self.insert_in_head(element)
@@ -46,11 +46,16 @@ class DBLLinkedList:
 
         i = 0
         while i < index:
-            if node.next_node == self.head:
-                self.append(element)
-                return
             node = node.next_node
             i += 1
+
+        if node is self.head:
+            self.tail = self.Node(element)
+            node.prev_node.next_node = self.tail
+            self.tail.prev_node = node.prev_node
+            self.tail.next_node = node
+            node.prev_node = self.tail
+            return
 
         new_node = self.Node(element=element)
         new_node.prev_node = node.prev_node
@@ -89,24 +94,19 @@ class DBLLinkedList:
         else:
             print('List is empty')
 
-    def delete(self, element): # Метод не доделан, не используется self.tail
-        node = self.head
+    def delete(self, element):
         if self.head.element == element:
             if self.head.next_node == self.head:
                 self.head = None
                 return
-            while node.next_node != self.head:
-                node = node.next_node
-            node.next_node = self.head.next_node
             self.head = self.head.next_node
-            self.head.prev_node = node
+            self.head.prev_node = self.tail
+            self.tail.next_node = self.head
             return
 
-        while node.next_node != self.head:
-            if node.element == element:
-                break
+        node = self.head
+        while node.element != element:
             node = node.next_node
-
         node.prev_node.next_node = node.next_node
         node.next_node.prev_node = node.prev_node
-        node.next_node = None
+        del node
